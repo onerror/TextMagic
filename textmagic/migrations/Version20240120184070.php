@@ -31,7 +31,7 @@ final class Version20240120184070 extends AbstractMigration
         
         // 1
         $this->addSql(
-            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '2 + 2 =', 'x1 OR x2 OR (x2 AND x3)',1);"
+            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '2 + 2 =', 'x1 OR x2 OR (x1 AND x2)',1);"
         );
         $this->addSql(
             "INSERT INTO public.answer_variant (id, question_id, title, alias) VALUES (NEXTVAL('answer_variant_id_seq'), 1, '4', 'x1');"
