@@ -20,7 +20,6 @@ class TestAttemptQuestionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $answerVariants = $options['answer_variants'];
-
         
         $builder->add('userAnswerBitmask', ChoiceType::class, [
             'choices' => $answerVariants,

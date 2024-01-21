@@ -46,7 +46,7 @@ readonly class TestAttemptService
         return $testAttempt;
     }
     
-    public function addNewAnswer(TestAttemptAnswerDTO $dto)
+    public function addNewAnswer(TestAttemptAnswerDTO $dto): void
     {
         $testAttemptAnswer = new TestAttemptAnswer();
         $testAttemptAnswer->setQuestion($this->questionRepository->find($dto->getQuestionId()));

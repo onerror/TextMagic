@@ -23,17 +23,17 @@
         <h2><strong>Ответьте на вопрос </strong> {{ question.title }}</h2>
         <h3>Выберите один или несколько вариантов ответа:</h3>
         {{ form_start(form) }}
-		{% for checkbox in form.userAnswerBitmask %}
-			<div>
-				{{ form_widget(checkbox) }}
-				{{ form_label(checkbox) }}
-			</div>
+        {% for checkbox in form.userAnswerBitmask %}
+            <div>
+                {{ form_widget(checkbox) }}
+                {{ form_label(checkbox) }}
+            </div>
 
-		{% else %}
-			Не задано ни одного варианта ответа на вопрос.
-		{% endfor %}
+        {% else %}
+            Не задано ни одного варианта ответа на вопрос.
+        {% endfor %}
         {{ form_end(form) }}
 
     </div>
-	<h3><a href="{{ path('app_index') }}">К списку тестов</a></h3>
+    <h3><a href="{{ path('app_index') }}">К списку тестов</a></h3>
 {% endblock %}

@@ -90,7 +90,11 @@ class TestController extends AbstractController
             $dto = new TestAttemptAnswerDTO();
             $dto->setQuestionId($nextQuestion->getId());
             $dto->setTestAttemptId($testAttemptId);
-            $form = $this->createForm(TestAttemptQuestionType::class, $dto, ['answer_variants' => $nextQuestion->getAnswerVariants()]);
+            
+            $answerOptions = $nextQuestion->getAnswerVariants()->toArray();
+            shuffle($answerOptions); // randomize the order of answer options
+            
+            $form = $this->createForm(TestAttemptQuestionType::class, $dto, ['answer_variants' => $answerOptions]);
             
             $form->handleRequest($request);
             
