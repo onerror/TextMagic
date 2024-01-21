@@ -14,11 +14,16 @@ use App\Repository\TestAttemptRepository;
 
 class TestAttemptService
 {
+    private array $possibleKeysForAnswerFormula;
+    
     public function __construct(
-        private readonly TestAttemptRepository $testAttemptRepository,
-        private readonly QuestionRepository $questionRepository,
-        private readonly TestAttemptAnswerRepository $testAttemptAnswerRepository
+        private TestAttemptRepository $testAttemptRepository,
+        private QuestionRepository $questionRepository,
+        private TestAttemptAnswerRepository $testAttemptAnswerRepository
     ) {
+        for ($i = 1; $i < BinaryHelper::BYTES_IN_INTEGER + 1; $i++) {
+            $this->possibleKeysForAnswerFormula[$i - 1] = 'x' . $i;
+        }
     }
     
     public function getLastUncompletedTestAttempt(Test $test): ?\App\Entity\TestAttempt
@@ -61,7 +66,7 @@ class TestAttemptService
         $this->testAttemptRepository->save($testAttempt);
     }
     
-    public function getRandomUnansweredQuestion(TestAttempt $testAttempt)
+    public function getRandomUnansweredQuestion(TestAttempt $testAttempt): ?\App\Entity\Question
     {
         return $this->questionRepository->getRandomUnanwseredQuestion($testAttempt);
     }
@@ -72,5 +77,35 @@ class TestAttemptService
         return $this->testAttemptRepository->find($testAttemptId);
     }
     
+    public function getQuestionsAnsweredRight(TestAttempt $testAttempt): array
+    {
+        $userAnswers = $testAttempt->getTestAttemptAnswers();
+        $questions = [];
+        foreach ($userAnswers as $key => $answer) {
+            if (BinaryHelper::isBinaryAnswerFitsAnswerFormula(
+                $answer->getUserAnswerBitmask(),
+                $answer->getQuestion()->getRightAnswerFormula(),
+                $this->possibleKeysForAnswerFormula
+            )) {
+                $questions[] = $answer->getQuestion();
+            }
+        }
+        return $questions;
+    }
     
+    public function getQuestionsAnsweredWrong(TestAttempt $testAttempt): array
+    {
+        $userAnswers = $testAttempt->getTestAttemptAnswers();
+        $questions = [];
+        foreach ($userAnswers as $key => $answer) {
+            if (!BinaryHelper::isBinaryAnswerFitsAnswerFormula(
+                $answer->getUserAnswerBitmask(),
+                $answer->getQuestion()->getRightAnswerFormula(),
+                $this->possibleKeysForAnswerFormula
+            )) {
+                $questions[] = $answer->getQuestion();
+            }
+        }
+        return $questions;
+    }
 }

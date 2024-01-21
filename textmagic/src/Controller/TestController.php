@@ -46,16 +46,6 @@ class TestController extends AbstractController
         if ($uncompletedTestAttempt) {
             return $this->redirectToRoute('app_test_attempt', ['testId' => $test->getId(), 'testAttemptId' => $uncompletedTestAttempt->getId()]);
         } else {
-            $completedTestAttempt = $this->testAttemptService->getLastCompletedTestAttempt($test);
-            if ($completedTestAttempt) {
-                return $this->redirectToRoute(
-                    'app_test_attempt',
-                    [
-                        'testId' => $test->getId(),
-                        'testAttemptId' => $completedTestAttempt->getId()
-                    ]
-                );
-            }
             
             //if no attempts in database so far, create a new attempt
             $testAttempt = $this->testAttemptService->createNewAttempt($customer, $test);
@@ -78,9 +68,10 @@ class TestController extends AbstractController
         }
         if ($testAttempt->isIsCompleted()){
 
-                return $this->render('test/results.html.twig', [ // todo
-                    'controller_name' => 'TestController',
-                    'id' => $testAttemptId // todo
+                return $this->render('test/results.html.twig', [
+                    'test_title' => $testAttempt->getTest()->getTitle(),
+                    'right_questions' => $this->testAttemptService->getQuestionsAnsweredRight($testAttempt),
+                    'wrong_questions' => $this->testAttemptService->getQuestionsAnsweredWrong($testAttempt),
                 ]);
         }
         
