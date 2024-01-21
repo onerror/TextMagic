@@ -24,4 +24,9 @@ class TestService
         return $test;
     }
     
+    public function getAvailableTests(): array
+    {
+        return $this->testRepository->findAll();
+    }
+    
 }

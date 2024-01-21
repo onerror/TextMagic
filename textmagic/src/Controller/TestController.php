@@ -24,9 +24,19 @@ class TestController extends AbstractController
     ) {
     }
     
+    #[Route('/',
+        name: 'app_index', methods: ['GET'])]
+    public function index(): Response
+    {
+        $testsAvailable = $this->testService->getAvailableTests();
+        return $this->render('index.html.twig', [
+            'tests' => $testsAvailable,
+        ]);
+    }
+    
     #[Route('/test/{id}',
         name: 'app_test', requirements: ['id' => '\d+'], defaults: ['id' => null], methods: ['GET'])]
-    public function index(int $id = null): Response
+    public function handleTest(int $id = null): Response
     {
         $customer = $this->customerRepository->find(self::THE_ONLY_CUSTOMER_ID);
         if ($id === null) {
@@ -69,7 +79,7 @@ class TestController extends AbstractController
         if ($testAttempt->isIsCompleted()){
 
                 return $this->render('test/results.html.twig', [
-                    'test_title' => $testAttempt->getTest()->getTitle(),
+                    'test' => $testAttempt->getTest(),
                     'right_questions' => $this->testAttemptService->getQuestionsAnsweredRight($testAttempt),
                     'wrong_questions' => $this->testAttemptService->getQuestionsAnsweredWrong($testAttempt),
                 ]);

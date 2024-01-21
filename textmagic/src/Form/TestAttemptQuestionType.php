@@ -31,20 +31,9 @@ class TestAttemptQuestionType extends AbstractType
             'expanded' => true,
             'multiple' => true,
         ])
-            ->add('submit', SubmitType::class);
-
-//
-//        $builder
-//            ->add('answerVariants', ChoiceType::class, [
-//                'class' => AnswerVariant::class,
-//                'choices' => $question->getAnswerVariants(),
-//                'choice_label' => function (AnswerVariant $answerVariant) {
-//                    return $answerVariant->getTitle();
-//                },
-//                'expanded' => true,
-//                'multiple' => true,
-//            ])
-//            ->add('submit', SubmitType::class);
+            ->add('submit', SubmitType::class, [
+                'label' => 'Ответить'
+            ]);
     }
     
     public function configureOptions(OptionsResolver $resolver): void
