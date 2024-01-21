@@ -58,4 +58,5 @@ or if 32 (integer) is not enough then we would have the table right_answer havin
 - calculating scores
 - displaying right and wrong answers, not only questions
 - if questions are typical and might be shared in many tests then it would be reasonable to add another table between 
-a question and a test, their relation would become many to many. The same holds true for questions and answers 
+a question and a test, their relation would become many to many. The same holds true for questions and answers
+- environments for dev, test, prod
