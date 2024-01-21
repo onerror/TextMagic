@@ -1,0 +1,32 @@
+FROM php:8.3-fpm
+
+# Update package list and install required PHP extension
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    libpq-dev \
+    libzip-dev \
+    libicu-dev \
+    libonig-dev && \
+    docker-php-ext-install pdo pdo_pgsql mbstring intl opcache zip
+
+RUN wget https://get.symfony.com/cli/installer -O - | bash \
+ && mv /root/.symfony5/bin/symfony /usr/local/bin/symfony \
+ && symfony check:requirements
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
+
+COPY textmagic/ .
+
+COPY textmagic/composer.lock textmagic/composer.json /var/www/
+
+RUN composer install
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+EXPOSE 9099
+CMD ["php-fpm"]

@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile-php
+    volumes:
+      - ./textmagic:/var/www
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    depends_on:
+      - postgres
+
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./textmagic:/var/www
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: textmagic
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+
+volumes:
+  db-data:
