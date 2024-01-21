@@ -26,35 +26,15 @@ class BinaryHelper
         return $bitmask;
     }
     
-    public static function isBinaryAnswerFitsAnswerFormula(int $answerBinaryMask, string $answerFormula, array $possibleAnswerPositionAliases)
+    public static function isBinaryAnswerFitsAnswerFormula(int $answerBinaryMask, string $answerFormula): bool
     {
-        $answerMap = [];
-        $n = count($possibleAnswerPositionAliases);
-        foreach ($possibleAnswerPositionAliases as $index => $possibleAnswerKey) {
-            $answerMap[$possibleAnswerKey] = (($answerBinaryMask >> $index) & 1);
+        $rightAnswerVariants = explode(',',$answerFormula);
+        foreach ($rightAnswerVariants as $rightAnswerVariant){
+            if ($answerBinaryMask===(int)$rightAnswerVariant){
+                return true;
+            }
         }
         
-        self::validateInput($answerFormula, array_keys($answerMap));
-
-        //replace AND, OR with their corresponding PHP operators
-        $evaluatedString = str_replace(['AND', 'OR'], ['&&', '||'], $answerFormula);
-
-       //replace x1, x2 etc with their corresponding values
-        foreach ($answerMap as $key => $val) {
-            $evaluatedString = str_replace($key, $val, $evaluatedString);
-        }
-        
-        if (eval("return $evaluatedString;")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    private static function validateInput($str, $keys): void
-    {
-        if (preg_match('/[^()\s' . implode('', $keys) . 'ANDOR]/', $str)) {
-            throw new \InvalidArgumentException('Некорректные символы в базе данных');
-        }
+        return false;
     }
 }

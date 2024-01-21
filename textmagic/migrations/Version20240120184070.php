@@ -31,7 +31,7 @@ final class Version20240120184070 extends AbstractMigration
         
         // 1
         $this->addSql(
-            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '2 + 2 =', 'x1 OR x2 OR (x1 AND x2)',1);"
+            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '2 + 2 =', '1,2,3',1);"
         );
         $this->addSql(
             "INSERT INTO public.answer_variant (id, question_id, title, alias) VALUES (NEXTVAL('answer_variant_id_seq'), 1, '4', 'x1');"
@@ -44,7 +44,7 @@ final class Version20240120184070 extends AbstractMigration
         );
         // 2
         $this->addSql(
-            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '1 + 1 =', 'x2', 1);"
+            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '1 + 1 =', '2', 1);"
         );
         $this->addSql(
             "INSERT INTO public.answer_variant (id, question_id, title, alias) VALUES (NEXTVAL('answer_variant_id_seq'), 2, '3', 'x1');"
@@ -58,7 +58,7 @@ final class Version20240120184070 extends AbstractMigration
         
         //3
         $this->addSql(
-            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '3 + 3 =', 'x1 OR x3 OR x4 OR (x1 AND x3) OR (x1 AND x4) OR (x3 AND x4) OR (x1 AND x3 AND x4)', 1);"
+            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '3 + 3 =', '1,4,8,5,9,12,13', 1);"
         );
         $this->addSql(
             "INSERT INTO public.answer_variant (id, question_id, title, alias) VALUES (NEXTVAL('answer_variant_id_seq'), 3, '1 + 5', 'x1');"
@@ -75,7 +75,7 @@ final class Version20240120184070 extends AbstractMigration
         
         //4
         $this->addSql(
-            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '4 + 4 =', 'x1 OR x4 OR (x1 AND x4)', 1);"
+            "INSERT INTO public.question (id, title, right_answer_formula, test_id) VALUES (NEXTVAL('question_id_seq'), '4 + 4 =', '1,8,9', 1);"
         );
         $this->addSql(
             "INSERT INTO public.answer_variant (id, question_id, title, alias) VALUES (NEXTVAL('answer_variant_id_seq'), 4, '8', 'x1');"

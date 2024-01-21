@@ -12,18 +12,14 @@ use App\Repository\QuestionRepository;
 use App\Repository\TestAttemptAnswerRepository;
 use App\Repository\TestAttemptRepository;
 
-class TestAttemptService
+readonly class TestAttemptService
 {
-    private array $possibleKeysForAnswerFormula;
     
     public function __construct(
         private TestAttemptRepository $testAttemptRepository,
         private QuestionRepository $questionRepository,
         private TestAttemptAnswerRepository $testAttemptAnswerRepository
     ) {
-        for ($i = 1; $i < BinaryHelper::BYTES_IN_INTEGER + 1; $i++) {
-            $this->possibleKeysForAnswerFormula[$i - 1] = 'x' . $i;
-        }
     }
     
     public function getLastUncompletedTestAttempt(Test $test): ?\App\Entity\TestAttempt
@@ -85,7 +81,6 @@ class TestAttemptService
             if (BinaryHelper::isBinaryAnswerFitsAnswerFormula(
                 $answer->getUserAnswerBitmask(),
                 $answer->getQuestion()->getRightAnswerFormula(),
-                $this->possibleKeysForAnswerFormula
             )) {
                 $questions[] = $answer->getQuestion();
             }
@@ -101,7 +96,6 @@ class TestAttemptService
             if (!BinaryHelper::isBinaryAnswerFitsAnswerFormula(
                 $answer->getUserAnswerBitmask(),
                 $answer->getQuestion()->getRightAnswerFormula(),
-                $this->possibleKeysForAnswerFormula
             )) {
                 $questions[] = $answer->getQuestion();
             }
