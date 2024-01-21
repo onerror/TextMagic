@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Тест{% endblock %}
+
+{% block body %}
+    <style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px/1.5 sans-serif;
+		}
+
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+
+    </style>
+
+    <div class="example-wrapper">
+        <h1>Тест {{ test_title }}</h1>
+        <h2><strong>Ответьте на вопрос </strong> {{ question.title }}</h2>
+        <h3>Выберите один или несколько вариантов ответа:</h3>
+        {{ form_start(form) }}
+		{% for checkbox in form.userAnswerBitmask %}
+			<div>
+				{{ form_widget(checkbox) }}
+				{{ form_label(checkbox) }}
+			</div>
+
+		{% else %}
+			Не задано ни одного варианта ответа на вопрос.
+		{% endfor %}
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}

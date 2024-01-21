@@ -1,0 +1,3 @@
+0000000000000000000000000000000000000000 eb7abcd38f8e4c4a5c7c4c8a20e0613f6e816d38 Evgeny Pyastolov <pyastolov@gmail.com> 1705762101 +0500	commit (initial): Add initial set of files
+eb7abcd38f8e4c4a5c7c4c8a20e0613f6e816d38 8a868fe94c3b5c27e72632f20d84d39d0871f422 Evgeny Pyastolov <pyastolov@gmail.com> 1705762117 +0500	commit: Add webapp packages
+8a868fe94c3b5c27e72632f20d84d39d0871f422 97a34425818c5dd02b541f468ada9172172f3efa Evgeny Pyastolov <pyastolov@gmail.com> 1705847836 +0500	commit: more or less functioning app without results template yet
