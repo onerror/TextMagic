@@ -31,8 +31,8 @@ class QuestionRepository extends ServiceEntityRepository
             ->orderBy('RAND()')
             ->setMaxResults(1)
             ->getQuery();
-      //  dd ($query->getSQL());
-        return $query->getOneOrNullResult();
+        $result = $query->getOneOrNullResult();
+        return $result;
     }
     
 }

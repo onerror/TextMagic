@@ -21,10 +21,10 @@ class TestAttemptAnswerRepository extends ServiceEntityRepository
         parent::__construct($registry, TestAttemptAnswer::class);
     }
     
-    public function save(TestAttemptAnswer $testAttempt): void
+    public function save(TestAttemptAnswer $testAttemptAnswer): void
     {
         $entityManager = $this->getEntityManager();
-        $entityManager->persist($testAttempt);
+        $entityManager->persist($testAttemptAnswer);
         $entityManager->flush();
     }
 }

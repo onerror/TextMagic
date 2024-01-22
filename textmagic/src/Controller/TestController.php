@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Dto\TestAttemptAnswerDTO;
 use App\Form\TestAttemptQuestionType;
 use App\Repository\CustomerRepository;
+use App\Repository\QuestionRepository;
 use App\Service\TestAttemptService;
 use App\Service\TestService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +21,8 @@ class TestController extends AbstractController
     public function __construct(
         private readonly TestService $testService,
         private readonly TestAttemptService $testAttemptService,
-        private readonly CustomerRepository $customerRepository
+        private readonly CustomerRepository $customerRepository, // todo later change for using a service or an interface
+        private readonly QuestionRepository $questionRepository, // todo later change for using a service or an interface
     ) {
     }
     
@@ -54,9 +56,14 @@ class TestController extends AbstractController
         
         $uncompletedTestAttempt = $this->testAttemptService->getLastUncompletedTestAttempt($test);
         if ($uncompletedTestAttempt) {
-            return $this->redirectToRoute('app_test_attempt', ['testId' => $test->getId(), 'testAttemptId' => $uncompletedTestAttempt->getId()]);
+            return $this->redirectToRoute(
+                'app_test_attempt',
+                [
+                    'testId' => $test->getId(),
+                    'testAttemptId' => $uncompletedTestAttempt->getId()
+                ]
+            );
         } else {
-            
             //if no attempts in database so far, create a new attempt
             $testAttempt = $this->testAttemptService->createNewAttempt($customer, $test);
             return $this->redirectToRoute(
@@ -70,62 +77,94 @@ class TestController extends AbstractController
     }
     
     #[Route('/test/{testId}/{testAttemptId}',
-        name: 'app_test_attempt', requirements: ['testId' => '\d+', 'testAttemptId' => '\d+'], methods: ['GET', 'POST'])]
-    public function handleTestAttempt(int $testId, int $testAttemptId, Request $request): Response{
+        name: 'app_test_attempt', requirements: ['testId' => '\d+', 'testAttemptId' => '\d+'], methods: [
+            'GET',
+            'POST'
+        ])]
+    public function handleTestAttempt(int $testId, int $testAttemptId, Request $request): Response
+    {
         $testAttempt = $this->testAttemptService->getById($testAttemptId);
-        if (!$testAttempt){
+        if (!$testAttempt) {
             throw $this->createNotFoundException('Простите, но вы попали на несуществующую страницу теста');
         }
-        if ($testAttempt->isIsCompleted()){
-
-                return $this->render('test/results.html.twig', [
-                    'test' => $testAttempt->getTest(),
-                    'right_questions' => $this->testAttemptService->getQuestionsAnsweredRight($testAttempt),
-                    'wrong_questions' => $this->testAttemptService->getQuestionsAnsweredWrong($testAttempt),
-                ]);
+        if ($testAttempt->isIsCompleted()) {
+            return $this->render('test/results.html.twig', [
+                'test' => $testAttempt->getTest(),
+                'right_questions' => $this->testAttemptService->getQuestionsAnsweredRight($testAttempt),
+                'wrong_questions' => $this->testAttemptService->getQuestionsAnsweredWrong($testAttempt),
+            ]);
         }
         
         $nextQuestion = $this->testAttemptService->getRandomUnansweredQuestion($testAttempt);
         if ($nextQuestion) {
-            $dto = new TestAttemptAnswerDTO();
-            $dto->setQuestionId($nextQuestion->getId());
-            $dto->setTestAttemptId($testAttemptId);
-            
-            $answerOptions = $nextQuestion->getAnswerVariants()->toArray();
-            shuffle($answerOptions); // randomize the order of answer options
-            
-            $form = $this->createForm(TestAttemptQuestionType::class, $dto, ['answer_variants' => $answerOptions]);
-            
-            $form->handleRequest($request);
-            
-            if ($form->isSubmitted() && $form->isValid()) {
-                $this->testAttemptService->addNewAnswer($form->getData());
-                return $this->redirectToRoute(
-                    'app_test_attempt',
-                    [
-                        'testId' => $testId,
-                        'testAttemptId' => $testAttempt->getId()
-                    ]
-                );
-            }
-            
-            return $this->render('test/question.html.twig', [
-                'form' => $form->createView(),
-                'test_title' => $testAttempt->getTest()->getTitle(),
-                'question' => $nextQuestion
-            ]);
-            
+            $response = $this->redirectToRoute(
+                'app_question',
+                [
+                    'testId' => $testId,
+                    'testAttemptId' => $testAttempt->getId(),
+                    'questionId' => $nextQuestion->getId(),
+                ]
+            );
+            return $response;
         } else {
             $this->testAttemptService->markAttemptCompleted($testAttempt);
-            return $this->redirectToRoute(
+            $response = $this->redirectToRoute(
                 'app_test_attempt',
                 [
                     'testId' => $testId,
                     'testAttemptId' => $testAttempt->getId()
                 ]
             );
+            
+            return $response;
+        }
+    }
+    
+    #[Route('/test/{testId}/{testAttemptId}/{questionId}',
+        name: 'app_question', requirements: ['testId' => '\d+', 'testAttemptId' => '\d+', 'questionId' => '\d+'], methods: [
+            'GET',
+            'POST'
+        ])]
+    public function handleQuestion(int $testId, int $testAttemptId, int $questionId, Request $request): Response
+    {
+        $nextQuestion = $this->questionRepository->find($questionId);
+        if (!$nextQuestion){
+            throw new \InvalidArgumentException("Нет вопроса с идентификатором $questionId");
+        }
+        $testAttempt = $this->testAttemptService->getById($testAttemptId);
+        if (!$testAttempt) {
+            throw new \InvalidArgumentException("Не существует сессии теста с идентификатором $testAttemptId");
+        }
+        $dto = new TestAttemptAnswerDTO();
+        $dto->setQuestionId($nextQuestion->getId());
+        $dto->setTestAttemptId($testAttemptId);
+        
+        $answerOptions = $nextQuestion->getAnswerVariants()->toArray();
+        shuffle($answerOptions); // randomize the order of answer options
+        
+        $form = $this->createForm(TestAttemptQuestionType::class, $dto, ['answer_variants' => $answerOptions]);
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->testAttemptService->addNewAnswer($form->getData());
+            $response = $this->redirectToRoute(
+                'app_test_attempt',
+                [
+                    'testId' => $testId,
+                    'testAttemptId' => $testAttemptId
+                ]
+            );
+            
+            return $response;
         }
         
-
+        return $this->render('test/question.html.twig', [
+            'form' => $form->createView(),
+            'test_title' => $testAttempt->getTest()->getTitle(),
+            'question' => $nextQuestion
+        ]);
     }
+    
+    
 }
